@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const TipoActivo = sequelize.define('tipoActivo', {
+const Proyecto = sequelize.define('proyecto', {
     id:{
         type: Sequelize.INTEGER,
         autoIncrement : true,
@@ -10,18 +10,14 @@ const TipoActivo = sequelize.define('tipoActivo', {
         primaryKey: true
     },
     nombre: Sequelize.STRING,
-    tipo:{
-        type: Sequelize.STRING,
+    fechaEntrada:{
+        type: Sequelize.DATE,
         allowNull: false
     },
-    codigo:{
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    modelo:{
-        type: Sequelize.STRING,
+    fechaSalida:{
+        type: Sequelize.DATE,
         allowNull: false
     }
 });
 
-module.exports = TipoActivo;
+module.exports = Proyecto;
