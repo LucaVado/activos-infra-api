@@ -13,6 +13,13 @@ app.use(bodyParser.json()); // application/json
 
 const sequelize= require('./util/database');
 
+const TipoActivo = require('./models/tipo-activo');
+const Activo = require('./models/activo');
+const Proyecto = require('./models/proyecto');
+const Sucursal = require('./models/sucursal');
+const Departamento = require('./models/departamento');
+const User = require('./models/user');
+
 
 app.use((req, res, next) => {
     res.setHeader('Acces-control-Allow-Origin', '*');
@@ -26,10 +33,23 @@ app.use('/actives', activesRoutes);
 // app.listen(8080);
 const server = http.createServer(app);
 
+Activo.belongsTo(User);
+// Activo.hasOne(TipoActivo);
+Activo.belongsTo(TipoActivo);
+Activo.belongsTo(Proyecto);
+User.hasMany(Activo);
+User.belongsTo(Sucursal);
+User.belongsTo(Departamento);
+Sucursal.hasMany(User);
+Departamento.hasMany(User);
+Proyecto.belongsTo(User);
+Proyecto.hasMany(Activo);
+User.hasMany(Proyecto);
+
 
 sequelize
-    // .sync( { force: true })
-    .sync()    
+    .sync( { force: true })
+    // .sync()    
     .then(result =>{
         server.listen(8080);
     })

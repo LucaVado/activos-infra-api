@@ -2,26 +2,30 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const TipoActivo = sequelize.define('tipoActivo', {
+const Sucursal = sequelize.define('sucursal', {
     id:{
         type: Sequelize.INTEGER,
         autoIncrement : true,
         allowNull: false,
         primaryKey: true
     },
-    nombre: Sequelize.STRING,
-    tipo:{
+    iata:{
         type: Sequelize.STRING,
         allowNull: false
     },
-    codigo:{
+    nombre: Sequelize.STRING,
+    latitud:{
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    modelo:{
+    longitud:{
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    estado:{
         type: Sequelize.STRING,
         allowNull: false
-    }
+    },
 });
 
-module.exports = TipoActivo;
+module.exports = Sucursal;

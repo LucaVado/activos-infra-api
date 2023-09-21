@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const TipoActivo = sequelize.define('tipoActivo', {
+const User = sequelize.define('user', {
     id:{
         type: Sequelize.INTEGER,
         autoIncrement : true,
@@ -10,18 +10,15 @@ const TipoActivo = sequelize.define('tipoActivo', {
         primaryKey: true
     },
     nombre: Sequelize.STRING,
-    tipo:{
-        type: Sequelize.STRING,
-        allowNull: false
-    },
-    codigo:{
+    apellidoPaterno: Sequelize.STRING,
+    apellidoMaterno: Sequelize.STRING,
+    numeroEmpleado:{
         type: Sequelize.INTEGER,
         allowNull: false
     },
-    modelo:{
-        type: Sequelize.STRING,
-        allowNull: false
-    }
+    correo: Sequelize.STRING,
+    contraseña: Sequelize.STRING,
+    tipoUsuario: Sequelize.STRING
 });
 
-module.exports = TipoActivo;
+module.exports = User;
