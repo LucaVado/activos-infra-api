@@ -45,11 +45,12 @@ Departamento.hasMany(User);
 Proyecto.belongsTo(User);
 Proyecto.hasMany(Activo);
 User.hasMany(Proyecto);
+TipoActivo.belongsTo(User);
 
 
 sequelize
-    .sync( { force: true })
-    // .sync()    
+    // .sync( { force: true })
+    .sync()    
     .then(result =>{
         server.listen(8080);
     })
