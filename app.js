@@ -6,8 +6,6 @@ const app = express();
 
 const bodyParser = require('body-parser');
 
-const activesRoutes = require('./routes/actives');
-
 // app.use(bodyParser.urlencoded()); 
 app.use(bodyParser.json()); // application/json
 
@@ -28,7 +26,11 @@ app.use((req, res, next) => {
     next();
 });
 
+const activesRoutes = require('./routes/actives');
+const usersRoutes = require('./routes/user');
+
 app.use('/actives', activesRoutes);
+app.use('/users', usersRoutes);
 
 // app.listen(8080);
 const server = http.createServer(app);
@@ -38,13 +40,14 @@ Activo.belongsTo(User);
 Activo.belongsTo(TipoActivo);
 Activo.belongsTo(Proyecto);
 User.hasMany(Activo);
-User.belongsTo(Sucursal);
-User.belongsTo(Departamento);
-Sucursal.hasMany(User);
-Departamento.hasMany(User);
+// User.belongsTo(Sucursal);
+// User.belongsTo(Departamento);
+// Sucursal.hasMany(User);
+// Departamento.hasMany(User);
 Proyecto.belongsTo(User);
 Proyecto.hasMany(Activo);
 User.hasMany(Proyecto);
+TipoActivo.belongsTo(User);
 
 
 sequelize
