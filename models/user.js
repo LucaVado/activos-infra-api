@@ -12,12 +12,13 @@ const User = sequelize.define('user', {
     nombre: Sequelize.STRING,
     apellidoPaterno: Sequelize.STRING,
     apellidoMaterno: Sequelize.STRING,
-    numeroEmpleado:{
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
+    numeroEmpleado: Sequelize.INTEGER,
+    // {
+    //     type: Sequelize.INTEGER,
+    //     allowNull: false
+    // },
     correo: Sequelize.STRING,
-    contraseña: Sequelize.STRING,
+    password: Sequelize.STRING,
     tipoUsuario: Sequelize.STRING
 });
 
