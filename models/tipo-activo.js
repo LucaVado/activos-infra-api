@@ -15,7 +15,7 @@ const TipoActivo = sequelize.define('tipoActivo', {
         allowNull: false
     },
     codigo:{
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
     },
     modelo:{

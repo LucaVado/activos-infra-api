@@ -26,11 +26,19 @@ app.use((req, res, next) => {
     next();
 });
 
-const activesRoutes = require('./routes/actives');
+const activosRoutes = require('./routes/activos');
+const tipoActivoRoutes = require('./routes/tipo-activo');
 const usersRoutes = require('./routes/user');
+const departamentosRoutes = require('./routes/departamentos');
+const sucursalRoutes = require('./routes/sucursal');
+const proyectosRoutes = require('./routes/proyectos');
 
-app.use('/actives', activesRoutes);
+app.use('/activos', activosRoutes);
+app.use('/tipo-activo', tipoActivoRoutes);
 app.use('/users', usersRoutes);
+app.use('/departamento', departamentosRoutes);
+app.use('/sucursal', sucursalRoutes);
+app.use('/proyecto', proyectosRoutes);
 
 // app.listen(8080);
 const server = http.createServer(app);
@@ -40,10 +48,10 @@ Activo.belongsTo(User);
 Activo.belongsTo(TipoActivo);
 Activo.belongsTo(Proyecto);
 User.hasMany(Activo);
-// User.belongsTo(Sucursal);
-// User.belongsTo(Departamento);
-// Sucursal.hasMany(User);
-// Departamento.hasMany(User);
+User.belongsTo(Sucursal);
+User.belongsTo(Departamento);
+Sucursal.hasMany(User);
+Departamento.hasMany(User);
 Proyecto.belongsTo(User);
 Proyecto.hasMany(Activo);
 User.hasMany(Proyecto);
