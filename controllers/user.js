@@ -10,7 +10,7 @@ exports.createUser = (req,res,next) =>{
         console.log(user);
         res.status(201).json({
             message: 'post usuario creado',
-            user: content
+            user: user
         });
     })
     .catch(err => {
@@ -29,6 +29,6 @@ exports.createUser = (req,res,next) =>{
 //         "contraseña":"1234",
 //         "tipoUsuario": "Admin",
 //         "sucursalId": 1,
-//         "departamentoId": 6
+//         "departamentoId": 1
 //     }
 // }

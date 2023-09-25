@@ -1,0 +1,94 @@
+localhost:8080/sucursal/post-sucursal
+{
+    "content": {
+        "iata": "LMM-01",
+        "nombre": "Corporativo",
+        "latitud": "12345",
+        "longitud": "12345",
+        "estado": "Sinaloa"
+    }
+}
+
+localhost:8080/departamento/post-departamento
+{
+    "content": {
+        "nombre": "Infraestructura"
+    }
+}
+
+localhost:8080/users/post-users
+{
+     "content": {
+         "nombre": "Jose Carlos", 
+         "apellidoPaterno":"Jimenez",
+         "apellidoMaterno": "Bacasegua",
+         "numeroEmpleado": 123,
+         "correo": "practicanteinfra2@paquetexpress.com.mx",
+         "password":"1234",
+         "tipoUsuario": "Admin",
+         "sucursalId": 1,
+         "departamentoId": 1
+     }
+}
+
+localhost:8080/tipo-activo/create-tipo
+{
+    "content": [
+        {
+            "nombre": "Camara hikvision domo 4 MP",
+            "tipo": "Domo IP 4 Megapixel",
+            "codigo": "chd4M",
+            "modelo": "DS-2CD2143G2-I",
+            "userId":1
+        },
+        {
+            "nombre": "Camara hikvision bala 4 MP",
+            "tipo": "Bala IP 4 Megapíxel / ACUSENSE",
+            "codigo": "chb4MP",
+            "modelo": "DS-2CD1T43G2-I",
+            "userId":1
+        },
+        {
+            "nombre": "Camara hikvision bala 4 MP",
+            "tipo": "Bala IP 4 Megapixel / Lente 2.8 mm",
+            "codigo": "chb4MP2.8",
+            "modelo": "DS-2CD2043G2-I(U)",
+            "userId":1
+        },
+        {
+            "nombre": "NVR hikvision 16IP",
+            "tipo": "NVR Hikvision DS-7700",
+            "codigo": "nvrh16IP",
+            "modelo": "DS-7732NI-K4",
+            "userId":1
+        }
+    ]
+}
+
+localhost:8080/proyecto/post-proyecto
+{
+     "content": {
+         "nombre": "VSA-01",
+         "fechaEntrada": "2023-09-25",
+         "fechaSalida": "2023-09-25",
+         "userId": 1
+     }
+}
+
+localhost:8080/activos/post-activo
+{
+     "content": {
+         "nombre": "Camara hikvision domo 4 MP", 
+         "numeroSerie":123456789,
+         "numeroActivo": 123456789,
+         "fechaEntrada": "2023-09-25",
+         "fechaSalida": "2023-09-25",
+         "estatus":"Entrada",
+         "folio": "123456",
+         "guia": "1234567",
+         "razon": "Apertura",
+         "userId": 1,
+         "tipoActivoId":1,
+         "proyectoId":2
+     }
+}
