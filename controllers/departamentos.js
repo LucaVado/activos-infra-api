@@ -18,3 +18,16 @@ exports.createDepartamento = (req,res,next) =>{
       });
     
 }
+
+exports.getDepartamento = (req,res,next) => {
+    Departamento.findAll()
+        .then(departamento => {
+            res.json({ 
+                message: "departamentos obtenidos",
+                departamento: departamento
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
