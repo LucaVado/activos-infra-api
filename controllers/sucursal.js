@@ -1,5 +1,18 @@
 const Sucursal = require('../models/sucursal');
 
+exports.getSucursales = (req,res,next) => {
+    Sucursal.findAll()
+        .then(sucursal => {
+            res.json({ 
+                message: "sucursales obtenidos",
+                sucursal: sucursal
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
 exports.createSucursal = (req,res,next) =>{
 
     const content = req.body.content;

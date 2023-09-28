@@ -1,4 +1,29 @@
 const User = require('../models/user');
+const { use } = require('../routes/activos');
+
+exports.getUsers = (req,res,next) => {
+    User.findAll()
+        .then(users => {
+            res.json({ 
+                message: "usuarios obtenidos",
+                users: users
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
+exports.getUser = (req,res,next) => {
+    const id = req.body.id;
+    User.findOne({ where: {id: id}})
+    .then(user => {
+        if(!user) user = "usuario no encontrado";
+        res.json({
+            user:user
+        })
+    })
+}
 
 exports.createUser = (req,res,next) =>{
 

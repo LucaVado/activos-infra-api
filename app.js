@@ -59,8 +59,8 @@ TipoActivo.belongsTo(User);
 
 
 sequelize
-    .sync( { force: true })
-    // .sync()    
+    // .sync( { force: true })
+    .sync()    
     .then(result =>{
         server.listen(8080);
     })
