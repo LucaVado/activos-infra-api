@@ -1,5 +1,18 @@
 const Proyecto = require('../models/proyecto');
 
+exports.getProyectos = (req,res,next) => {
+    Proyecto.findAll()
+        .then(proyecto => {
+            res.json({ 
+                message: "proyectos obtenidos",
+                proyecto: proyecto
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
 exports.createProyecto = (req,res,next) =>{
 
     const content = req.body.content;

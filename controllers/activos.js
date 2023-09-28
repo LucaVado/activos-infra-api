@@ -14,20 +14,16 @@ const Activo = require('../models/activo');
 // ]
 
 exports.getActivos = (req,res,next) => {
-    res.status(200).json({
-        activos: [
-            {
-                id: 1,
-                tipo: 'NVR',
-                Sucursal: 'MTRIZ',
-            },
-            {
-                id: 2,
-                tipo: 'Camara Hikvision',
-                Sucursal: 'MTRIZ',
-            }
-        ]
-    });
+    Activo.findAll()
+        .then(activos => {
+            res.json({ 
+                message: "activos obtenidos",
+                activos: activos
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
 }
 
 exports.createActivo = (req,res,next) =>{
