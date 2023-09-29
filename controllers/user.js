@@ -15,7 +15,8 @@ exports.getUsers = (req,res,next) => {
 }
 
 exports.getUser = (req,res,next) => {
-    const id = req.body.id;
+    const id = req.query.id;
+    console.log(id);
     User.findOne({ where: {id: id}})
     .then(user => {
         if(!user) user = "usuario no encontrado";
