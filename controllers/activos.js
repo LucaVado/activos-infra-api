@@ -26,6 +26,18 @@ exports.getActivos = (req,res,next) => {
         });
 }
 
+exports.getActivo = (req,res,next) => {
+    const id = req.query.id;
+    console.log(id);
+    Activo.findOne({ where: {id: id}})
+    .then(activo => {
+        if(!activo) activo = "activo no encontrado";
+        res.json({
+            activo:activo
+        })
+    })
+}
+
 exports.createActivo = (req,res,next) =>{
     const content = req.body.content;
     console.log('content:',content);
@@ -41,4 +53,58 @@ exports.createActivo = (req,res,next) =>{
     .catch(err => {
         console.log(err);
       });
+}
+
+exports.postEditActivo = (req,res,next) => {
+    const activoId = req.body.activo.id;
+    const updatedNombre = req.body.activo.nombre;    
+    const updatedNumeroSerie = req.body.activo.numeroSerie;
+    const updatedNumeroActivo = req.body.activo.numeroActivo;
+    const updatedFechaEntrada = req.body.activo.fechaEntrada;
+    const updatedFechaSalida = req.body.activo.fechasalida;
+    const updatedEstatus = req.body.activo.estatus;
+    const updatedfolio = req.body.activo.folio;
+    const updatedGuia = req.body.activo.guia;
+    
+    console.log(activoId);
+    Activo.findByPk(activoId)
+        .then(activo => {
+            console.log(activo)
+            activo.nombre = updatedNombre;
+            activo.numeroSerie = updatedNumeroSerie;
+            activo.numeroActivo = updatedNumeroActivo;
+            activo.fechaEntrada = updatedFechaEntrada;
+            activo.fechasalida = updatedFechaSalida;
+            activo.estatus = updatedEstatus;
+            activo.folio = updatedfolio;
+            activo.guia = updatedGuia;
+
+            return activo.save();
+        })
+        .then(result => {
+            res.status(201).json({
+                message: 'activo editado',
+                activo: result
+            });
+        })
+        .catch( err => {
+            console.log(err);
+        });
+}
+
+exports.postDeleteActivo = (req,res,next) => {
+    const activoId = req.query.id;
+    Activo.findByPk(activoId)
+        .then(activo => {
+            return activo.destroy();
+        })
+        .then(result => {
+            res.status(201).json({
+                message: 'activo eliminado',
+                activo: result
+            });
+        })
+        .catch( err => {
+            console.log(err);
+        });
 }

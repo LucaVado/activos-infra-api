@@ -10,5 +10,9 @@ router.post('/get-user', usersController.getUser);
 
 router.post('/post-users', usersController.createUser);
 
+router.post('/post-edit-user', usersController.postEditUser);
+
+router.post('/delete-proyecto', usersController.postDeleteUser);
+
 
 module.exports = router;
