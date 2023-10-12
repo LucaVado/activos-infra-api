@@ -45,6 +45,58 @@ exports.createUser = (req,res,next) =>{
     
 }
 
+exports.postEditUser = (req,res,next) => {
+    const userId = req.body.user.id;
+    const updatedNombre = req.body.user.nombre;    
+    const updatedApellidoPaterno = req.body.user.apellidoPaterno;
+    const updatedapellidoMaterno = req.body.user.apellidoMaterno;
+    const updatedNumeroEmpleado = req.body.user.numeroEmpleado;
+    const updatedCorreo = req.body.user.correo;
+    const updatedPassword = req.body.user.password;
+    const updatedTipousuario = req.body.user.tipoUsuario;
+    
+    console.log(userId);
+    User.findByPk(userId)
+        .then(user => {
+            console.log(activo)
+            user.nombre = updatedNombre;
+            user.numeroSerie = updatedApellidoPaterno;
+            user.numeroActivo = updatedapellidoMaterno;
+            user.fechaEntrada = updatedNumeroEmpleado;
+            user.fechasalida = updatedCorreo;
+            user.estatus = updatedPassword;
+            user.folio = updatedTipousuario;
+
+            return user.save();
+        })
+        .then(result => {
+            res.status(201).json({
+                message: 'user editado',
+                user: result
+            });
+        })
+        .catch( err => {
+            console.log(err);
+        });
+}
+
+exports.postDeleteUser = (req,res,next) => {
+    const userId = req.query.id;
+    User.findByPk(userId)
+        .then(user => {
+            return user.destroy();
+        })
+        .then(result => {
+            res.status(201).json({
+                message: 'user eliminado',
+                user: result
+            });
+        })
+        .catch( err => {
+            console.log(err);
+        });
+}
+
 // {
 //     "content": {
 //         "nombre": "Jose Carlos", 
