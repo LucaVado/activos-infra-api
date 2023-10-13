@@ -66,7 +66,7 @@ exports.postEditActivo = (req,res,next) => {
     const updatedfolio = req.body.activo.folio;
     const updatedGuia = req.body.activo.guia;
     
-    console.log(activoId);
+    console.log(updatedNombre);
     Activo.findByPk(activoId)
         .then(activo => {
             console.log(activo)
