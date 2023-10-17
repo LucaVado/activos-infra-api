@@ -3,7 +3,7 @@ const Proyecto = require('../models/proyecto');
 exports.getProyectos = (req,res,next) => {
     Proyecto.findAll()
         .then(proyecto => {
-            res.json({ 
+            res.status(200).json({ 
                 message: "proyectos obtenidos",
                 proyecto: proyecto
             });
