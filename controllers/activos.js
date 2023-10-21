@@ -32,7 +32,7 @@ exports.getActivo = (req,res,next) => {
     Activo.findOne({ where: {id: id}})
     .then(activo => {
         if(!activo) activo = "activo no encontrado";
-        res.json({
+        res.status(200).json({
             activo:activo
         })
     })

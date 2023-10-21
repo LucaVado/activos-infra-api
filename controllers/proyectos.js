@@ -38,7 +38,7 @@ exports.getProyecto = (req,res,next) => {
     Proyecto.findOne({ where: {id: id}})
     .then(proyecto => {
         if(!proyecto) proyecto = "proyecto no encontrado";
-        res.json({
+        res.status(200).json({
             proyecto:proyecto
         })
     })
@@ -50,8 +50,8 @@ exports.postEditProyecto = (req,res,next) => {
     const updatedFechaEntrada = req.body.proyecto.fechaEntrada;
     const updatedFechaSalida = req.body.proyecto.fechasalida;
     
-    console.log(activoId);
-    Proyecto.findByPk(activoId)
+    console.log(proyectoId);
+    Proyecto.findByPk(proyectoId)
         .then(proyecto => {
             console.log(proyecto)
             proyecto.nombre = updatedNombre;
