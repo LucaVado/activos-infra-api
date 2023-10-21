@@ -7,7 +7,7 @@ const activosController = require('../controllers/activos');
 
 router.get('/get-all', activosController.getActivos);
 
-router.get('/get-activo', activosController.getActivo);
+router.post('/get-activo', activosController.getActivo);
 
 // router.post('/create-tipo', activosController.saveAllTipoActivos);
 
