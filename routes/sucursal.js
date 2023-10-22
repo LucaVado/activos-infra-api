@@ -6,7 +6,13 @@ const sucursalController = require('../controllers/sucursal');
 
 router.get('/get-all', sucursalController.getSucursales);
 
+router.get('get-sucursal', sucursalController.getSucursal);
+
 router.post('/post-sucursal', sucursalController.createSucursal);
+
+router.post('/post-edit-sucursal', sucursalController.postEditSucursal);
+
+router.post('/delete-sucursal', sucursalController.postDeleteSucursal);
 
 
 module.exports = router;
