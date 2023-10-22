@@ -20,7 +20,7 @@ const User = require('./models/user');
 
 
 app.use((req, res, next) => {
-    res.setHeader('Access-control-Allow-Origin', '*');
+    res.setHeader('Access-control-Allow-Origin', 'http://localhost:3000');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
