@@ -12,7 +12,7 @@ router.post('/post-users', usersController.createUser);
 
 router.post('/post-edit-user', usersController.postEditUser);
 
-router.post('/delete-proyecto', usersController.postDeleteUser);
+router.post('/delete-user', usersController.postDeleteUser);
 
 
 module.exports = router;

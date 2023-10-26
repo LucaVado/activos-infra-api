@@ -53,6 +53,25 @@ exports.getTipos = (req,res,next) => {
         });
 }
 
+exports.createTipo = (req,res,next) =>{
+
+    const content = req.body.content;
+    console.log('content:',content);
+
+    TipoActivo.create(content)
+    .then(tipo =>{
+        console.log(tipo);
+        res.status(200).status(201).json({
+            message: 'post tipo creado',
+            tipo: tipo
+        });
+    })
+    .catch(err => {
+        console.log(err);
+      });
+    
+}
+
 exports.saveAllTipoActivos = (req, res, next) => {
     console.log('entro al route');
     const content = req.body.content;
@@ -81,3 +100,36 @@ function saveTipoActivos(tipoActivos){
         });
     }    
 }
+
+// {
+//     "content": [
+//         {
+//             "nombre": "Camara hikvision domo 4 MP",
+//             "tipo": "CCTV",
+//             "codigo": "chd4M",
+//             "modelo": "DS-2CD2143G2-I",
+//             "userId":1
+//         },
+//         {
+//             "nombre": "Teclado DSC",
+//             "tipo": "Alarma",
+//             "codigo": "chb4MP",
+//             "modelo": "DS-2CD1T43G2-I",
+//             "userId":1
+//         },
+//         {
+//             "nombre": "Camara hikvision bala 4 MP",
+//             "tipo": "CCTV",
+//             "codigo": "chb4MP2.8",
+//             "modelo": "DS-2CD2043G2-I(U)",
+//             "userId":1
+//         },
+//         {
+//             "nombre": "Panel de alarma",
+//             "tipo": "Alarma",
+//             "codigo": "nvrh16IP",
+//             "modelo": "DS-7732NI-K4",
+//             "userId":1
+//         }
+//     ]
+// }

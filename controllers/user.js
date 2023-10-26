@@ -58,7 +58,7 @@ exports.postEditUser = (req,res,next) => {
     console.log(userId);
     User.findByPk(userId)
         .then(user => {
-            console.log(activo)
+            console.log(user)
             user.nombre = updatedNombre;
             user.numeroSerie = updatedApellidoPaterno;
             user.numeroActivo = updatedapellidoMaterno;

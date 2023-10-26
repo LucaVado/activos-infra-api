@@ -6,6 +6,8 @@ const tiposActivoController = require('../controllers/tipo-activo');
 
 router.get('/get-tipo', tiposActivoController.getTipos);
 
-router.post('/create-tipo', tiposActivoController.saveAllTipoActivos);
+router.post('/create-tipos', tiposActivoController.saveAllTipoActivos);
+
+router.post('/post-tipo', tiposActivoController.createTipo);
 
 module.exports = router;
