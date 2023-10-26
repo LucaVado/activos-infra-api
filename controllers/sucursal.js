@@ -55,7 +55,6 @@ exports.postEditSucursal = (req,res,next) => {
     console.log(userId);
     Sucursal.findByPk(userId)
         .then(sucursal => {
-            console.log(activo)
             sucursal.nombre = updatedNombre;
             sucursal.iata = updatedIata;
             sucursal.latitud = updatedLatitud;

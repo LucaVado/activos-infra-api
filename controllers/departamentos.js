@@ -31,3 +31,7 @@ exports.getDepartamento = (req,res,next) => {
             console.log(err);
         });
 }
+
+exports.getHola = (req,res,next) => {
+    console.log('hola')
+}

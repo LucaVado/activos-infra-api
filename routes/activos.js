@@ -7,6 +7,10 @@ const activosController = require('../controllers/activos');
 
 router.get('/get-all', activosController.getActivos);
 
+router.get('/get-all-tipo', activosController.getActivosByTipo);
+
+router.get('/get-all-estatus', activosController.getActivosByEstatus);
+
 router.post('/get-activo', activosController.getActivo);
 
 // router.post('/create-tipo', activosController.saveAllTipoActivos);

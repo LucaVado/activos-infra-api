@@ -1,4 +1,5 @@
 const Activo = require('../models/activo');
+const TipoActivo = require('../models/tipo-activo');
 
 // const activos = [ 
 //     {
@@ -13,10 +14,10 @@ const Activo = require('../models/activo');
 //     }
 // ]
 
-exports.getActivos = (req,res,next) => {
+exports.getActivos = (req, res, next) => {
     Activo.findAll()
         .then(activos => {
-            res.json({ 
+            res.json({
                 message: "activos obtenidos",
                 activos: activos
             });
@@ -26,38 +27,206 @@ exports.getActivos = (req,res,next) => {
         });
 }
 
-exports.getActivo = (req,res,next) => {
+exports.getActivosPrueba = (req, res, next) => {
+    var resActivo = {};
+    Activo.findAll()
+        .then(activos => {
+            resActivo = activos.map(activo => {
+                return {
+                    ...activo.dataValues,
+                    fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                    fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+                };
+            });
+
+            const promises = activos.map(activo => {
+                return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+            });
+            return Promise.all(promises);
+        })
+        .then(tiposActivos => {
+            tiposActivos.forEach((tipoActivo, index) => {
+                resActivo[index].tipoActivoId = tipoActivo ? tipoActivo.tipo : "activo no encontrado";
+            });
+            console.log(resActivo);
+            res.json({
+                message: "activos obtenidos",
+                activos: resActivo
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+};
+
+// exports.getActivosCctv = (req, res, next) => {
+//     var activo = {
+//         id: null,
+//         nombre: '',
+//         fechaEntrada: '',
+//         fechaSalida: '',
+//         estatus: '',
+//         razon: '',
+//         tipo: '',
+//         user: ''
+//     };
+//     var activosArray = [];
+//     var resActivo = {};
+//     Activo.findAll()
+//         .then(activos => {
+//             resActivo = activos.map(activo => {
+//                 return {
+//                     ...activo.dataValues,
+//                     fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+//                     fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+//                 };
+//             });
+
+//             const promises = activos.map(activo => {
+//                 return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+//             });
+//             return Promise.all(promises);
+//         })
+//         .then(tiposActivos => {
+//             tiposActivos.forEach((tipoActivo, index) => {
+//                 resActivo[index].tipoActivoId = tipoActivo ? tipoActivo.tipo : "activo no encontrado";
+//             });
+//             console.log('resActivo: ',resActivo);
+//             for (item in resActivo) {
+//                 console.log('item: ',resActivo[item]);
+//                 activo.id = resActivo[item].id;
+//                 activo.nombre = resActivo[item].nombre;
+//                 activo.fechaEntrada = resActivo[item].fechaEntrada;
+//                 activo.fechaSalida = resActivo[item].fechaSalida;
+//                 activo.estatus = resActivo[item].estatus;
+//                 activo.razon = resActivo[item].razon;
+//                 activo.tipo = resActivo[item].tipoActivoId;
+//                 activo.user = resActivo[item].userId;
+//                 activosArray.push(activo);
+//                 console.log('array: ',activosArray)
+//             }
+//             res.json({
+//                 message: "activos obtenidos",
+//                 activos: activosArray
+//             });
+//         })
+//         .catch(err => {
+//             console.log(err);
+//         });
+// }
+exports.getActivosByTipo = (req, res, next) => {
+    var activosArray = [];
+    const tipo = req.query.tipo;
+    console.log(tipo);
+    Activo.findAll({
+        include: [{
+            model: TipoActivo,
+            where: { tipo: tipo }
+        }]
+    })
+        .then(activos => {
+            const promises = activos.map(activo => {
+                return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+            });
+            return Promise.all(promises).then(tiposActivos => {
+                activos.forEach((activo, index) => {
+                    const formattedActivo = {
+                        id: activo.id,
+                        nombre: activo.nombre,
+                        fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                        fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+                        estatus: activo.estatus,
+                        razon: activo.razon,
+                        tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                        user: activo.userId
+                    };
+                    activosArray.push(formattedActivo);
+                });
+                console.log('activosArray: ', activosArray);
+                res.json({
+                    message: "activos obtenidos",
+                    activos: activosArray
+                });
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+};
+
+exports.getActivosByEstatus = (req, res, next) => {
+    var activosArray = [];
+    const estatus = req.query.estatus;
+    console.log(estatus);
+    Activo.findAll({
+        where: { estatus: estatus }, // Agrega la cláusula where aquí
+        include: [{
+            model: TipoActivo
+        }]
+    })
+        .then(activos => {
+            const promises = activos.map(activo => {
+                return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+            });
+            return Promise.all(promises).then(tiposActivos => {
+                activos.forEach((activo, index) => {
+                    const formattedActivo = {
+                        id: activo.id,
+                        nombre: activo.nombre,
+                        fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                        fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+                        estatus: activo.estatus,
+                        razon: activo.razon,
+                        tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                        user: activo.userId
+                    };
+                    activosArray.push(formattedActivo);
+                });
+                console.log('activosArray: ', activosArray);
+                res.json({
+                    message: "activos obtenidos",
+                    activos: activosArray
+                });
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+};
+
+
+exports.getActivo = (req, res, next) => {
     const id = req.query.id;
     console.log(id);
-    Activo.findOne({ where: {id: id}})
-    .then(activo => {
-        if(!activo) activo = "activo no encontrado";
-        res.status(200).json({
-            activo:activo
+    Activo.findOne({ where: { id: id } })
+        .then(activo => {
+            if (!activo) activo = "activo no encontrado";
+            res.status(200).json({
+                activo: activo
+            })
         })
-    })
 }
 
-exports.createActivo = (req,res,next) =>{
+exports.createActivo = (req, res, next) => {
     const content = req.body.content;
-    console.log('content:',content);
+    console.log('content:', content);
 
     Activo.create(content)
-    .then(activo =>{
-        console.log(activo);
-        res.status(201).json({
-            message: 'post Activo creado',
-            activo: content
+        .then(activo => {
+            console.log(activo);
+            res.status(201).json({
+                message: 'post Activo creado',
+                activo: content
+            });
+        })
+        .catch(err => {
+            console.log(err);
         });
-    })
-    .catch(err => {
-        console.log(err);
-      });
 }
 
-exports.postEditActivo = (req,res,next) => {
+exports.postEditActivo = (req, res, next) => {
     const activoId = req.body.activo.id;
-    const updatedNombre = req.body.activo.nombre;    
+    const updatedNombre = req.body.activo.nombre;
     const updatedNumeroSerie = req.body.activo.numeroSerie;
     const updatedNumeroActivo = req.body.activo.numeroActivo;
     const updatedFechaEntrada = req.body.activo.fechaEntrada;
@@ -65,7 +234,7 @@ exports.postEditActivo = (req,res,next) => {
     const updatedEstatus = req.body.activo.estatus;
     const updatedfolio = req.body.activo.folio;
     const updatedGuia = req.body.activo.guia;
-    
+
     console.log(updatedNombre);
     Activo.findByPk(activoId)
         .then(activo => {
@@ -87,12 +256,12 @@ exports.postEditActivo = (req,res,next) => {
                 activo: result
             });
         })
-        .catch( err => {
+        .catch(err => {
             console.log(err);
         });
 }
 
-exports.postDeleteActivo = (req,res,next) => {
+exports.postDeleteActivo = (req, res, next) => {
     const activoId = req.query.id;
     Activo.findByPk(activoId)
         .then(activo => {
@@ -104,7 +273,7 @@ exports.postDeleteActivo = (req,res,next) => {
                 activo: result
             });
         })
-        .catch( err => {
+        .catch(err => {
             console.log(err);
         });
 }
