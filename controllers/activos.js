@@ -194,6 +194,47 @@ exports.getActivosByEstatus = (req, res, next) => {
         });
 };
 
+exports.getActivosByProyecto = (req, res, next) => {
+    var activosArray = [];
+    const proyecto = req.query.id;
+    console.log(proyecto);
+    Activo.findAll({
+        where: { proyectoId: proyecto }, // Agrega la cláusula where aquí
+        include: [{
+            model: TipoActivo
+        }]
+    })
+        .then(activos => {
+            const promises = activos.map(activo => {
+                return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+            });
+            return Promise.all(promises).then(tiposActivos => {
+                activos.forEach((activo, index) => {
+                    const formattedActivo = {
+                        id: activo.id,
+                        nombre: activo.nombre,
+                        fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                        fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+                        estatus: activo.estatus,
+                        razon: activo.razon,
+                        tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                        proyecto: activo.proyectoId,
+                        user: activo.userId
+                    };
+                    activosArray.push(formattedActivo);
+                });
+                console.log('activosArray: ', activosArray);
+                res.status(200).json({
+                    message: "activos obtenidos",
+                    activos: activosArray
+                });
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+};
+
 
 exports.getActivo = (req, res, next) => {
     const id = req.query.id;
@@ -234,6 +275,7 @@ exports.postEditActivo = (req, res, next) => {
     const updatedEstatus = req.body.activo.estatus;
     const updatedfolio = req.body.activo.folio;
     const updatedGuia = req.body.activo.guia;
+    const updatedRazon = req.body.activo.razon;
 
     console.log(updatedNombre);
     Activo.findByPk(activoId)
@@ -247,6 +289,7 @@ exports.postEditActivo = (req, res, next) => {
             activo.estatus = updatedEstatus;
             activo.folio = updatedfolio;
             activo.guia = updatedGuia;
+            activo.razon = updatedRazon;
 
             return activo.save();
         })
