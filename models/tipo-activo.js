@@ -9,7 +9,10 @@ const TipoActivo = sequelize.define('tipoActivo', {
         allowNull: false,
         primaryKey: true
     },
-    nombre: Sequelize.STRING,
+    nombre: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
     tipo:{
         type: Sequelize.STRING,
         allowNull: false
