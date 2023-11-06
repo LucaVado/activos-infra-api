@@ -15,11 +15,11 @@ const Sucursal = sequelize.define('sucursal', {
     },
     nombre: Sequelize.STRING,
     latitud:{
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(18, 15),
         allowNull: false
     },
     longitud:{
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(18, 15),
         allowNull: false
     },
     estado:{

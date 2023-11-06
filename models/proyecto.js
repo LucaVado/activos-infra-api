@@ -9,13 +9,27 @@ const Proyecto = sequelize.define('proyecto', {
         allowNull: false,
         primaryKey: true
     },
-    nombre: Sequelize.STRING,
+    nombre: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
     fechaEntrada:{
         type: Sequelize.DATE,
         allowNull: false
     },
     fechaSalida:{
         type: Sequelize.DATE,
+        allowNull: false
+    },
+    estatus:{
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    guia:{
+        type: Sequelize.STRING
+    },
+    razon:{
+        type: Sequelize.STRING,
         allowNull: false
     }
 });

@@ -53,6 +53,23 @@ exports.getTipos = (req,res,next) => {
         });
 }
 
+exports.getTipoByCode = (req, res, next) => {
+    const codigo = req.query.codigo;
+    TipoActivo.findOne({ where: { codigo: codigo } })
+        .then(tipo => {
+            if (!tipo) {
+                return res.status(404).json({ message: "Tipo de activo no encontrado" });
+            }
+            res.json({ 
+                message: "Tipo de activo obtenido",
+                tipo: tipo
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
 exports.createTipo = (req,res,next) =>{
 
     const content = req.body.content;
