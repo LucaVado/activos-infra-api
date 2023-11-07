@@ -190,6 +190,26 @@ exports.getProyecto = (req, res, next) => {
 //     })
 // }
 
+exports.getProyectoByName = (req, res, next) => {
+    const nombre = req.query.proyecto;
+    console.log(nombre);
+
+    Proyecto.findOne({ where: { nombre: nombre } })
+        .then(proyecto => {
+            if (!proyecto) {
+                return res.status(404).json({ message: "Proyecto no encontrado" });
+            }
+            proyecto.fechaEntrada = proyecto.fechaEntrada.toISOString().slice(0,10);
+            res.json({ 
+                message: "Proyecto obtenido",
+                proyecto: proyecto
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
+
 exports.postEditProyecto = (req, res, next) => {
     const proyectoId = req.body.proyecto.id;
     const updatedNombre = req.body.proyecto.nombre;
