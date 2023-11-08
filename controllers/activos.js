@@ -1,5 +1,6 @@
 const Activo = require('../models/activo');
 const TipoActivo = require('../models/tipo-activo');
+const Proyecto = require('../models/proyecto');
 
 // const activos = [ 
 //     {
@@ -138,6 +139,8 @@ exports.getActivosByTipo = (req, res, next) => {
                         estatus: activo.estatus,
                         razon: activo.razon,
                         tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                        codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+                        modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
                         user: activo.userId
                     };
                     activosArray.push(formattedActivo);
@@ -153,6 +156,7 @@ exports.getActivosByTipo = (req, res, next) => {
             console.log(err);
         });
 };
+
 
 exports.getActivosByEstatus = (req, res, next) => {
     var activosArray = [];
@@ -235,23 +239,59 @@ exports.getActivosByProyecto = (req, res, next) => {
         });
 };
 
-
 exports.getActivo = (req, res, next) => {
     const id = req.query.id;
     console.log(id);
     Activo.findOne({ where: { id: id } })
         .then(activo => {
             if (!activo) activo = "activo no encontrado";
-            res.status(200).json({
-                activo: activo
-            })
+            return TipoActivo.findOne({ where: { id: activo.tipoActivoId } }).then(tipoActivo => {
+                return Proyecto.findOne({ where: { id: activo.proyectoId } }).then(proyecto => {
+                    const formattedActivo = {
+                        id: activo.id,
+                        nombre: activo.nombre,
+                        fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                        fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+                        estatus: activo.estatus,
+                        razon: activo.razon,
+                        numeroSerie: activo.numeroSerie,
+                        numeroActivo: activo.numeroActivo,
+                        tipo: tipoActivo ? tipoActivo.tipo : "activo no encontrado",
+                        codigo: tipoActivo ? tipoActivo.codigo : "codigo no encontrado",
+                        modelo: tipoActivo ? tipoActivo.modelo : "modelo no encontrado",
+                        user: activo.userId,
+                        proyectoId: activo.proyectoId,
+                        proyecto: proyecto ? proyecto.nombre : "proyecto no encontrado"
+                    };
+                    res.status(200).json({
+                        activo: formattedActivo
+                    });
+                });
+            });
         })
-}
+        .catch(err => {
+            console.log(err);
+        });
+};
+
+
+// exports.getActivo = (req, res, next) => {
+//     const id = req.query.id;
+//     console.log(id);
+//     Activo.findOne({ where: { id: id } })
+//         .then(activo => {
+//             if (!activo) activo = "activo no encontrado";
+//             res.status(200).json({
+//                 activo: activo
+//             })
+//         })
+// }
 
 exports.createActivo = (req, res, next) => {
     const content = req.body.content;
     console.log('content:', content);
-
+    
+    // console.log(content.activo.numeroActivo)
     Activo.create(content)
         .then(activo => {
             console.log(activo);

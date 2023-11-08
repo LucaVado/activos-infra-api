@@ -19,12 +19,12 @@ const Activo = sequelize.define('activo', {
         allowNull: false
     },
     numeroActivo:{
-        type: Sequelize.INTEGER,
-        allowNull: false
+        type: Sequelize.STRING,
+        // allowNull: false
     },
     fechaEntrada:{
         type: Sequelize.DATE,
-        allowNull: false
+        // allowNull: false
     },
     fechaSalida:{
         type: Sequelize.DATE,
@@ -35,12 +35,12 @@ const Activo = sequelize.define('activo', {
         allowNull: false
     },
     folio:{
-        type: Sequelize.INTEGER,
-        allowNull: false
+        type: Sequelize.STRING,
+        // allowNull: false
     },
     guia:{
         type: Sequelize.STRING,
-        allowNull: false
+        // allowNull: false
     },
     razon:{
         type: Sequelize.STRING,
