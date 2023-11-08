@@ -100,6 +100,23 @@ exports.saveAllTipoActivos = (req, res, next) => {
     });
 }
 
+exports.postDeleteTipo = (req,res,next) => {
+    const userId = req.query.id;
+    TipoActivo.findByPk(userId)
+        .then(tipoActivo => {
+            return tipoActivo.destroy();
+        })
+        .then(tipoActivo => {
+            res.status(201).json({
+                message: 'tipo eliminada',
+                tipo: tipoActivo
+            });
+        })
+        .catch( err => {
+            console.log(err);
+        });
+}
+
 function saveTipoActivos(tipoActivos){
     for(i = 0; i < tipoActivos.length; i++){
         TipoActivo.create({
