@@ -182,6 +182,8 @@ exports.getActivosByEstatus = (req, res, next) => {
                         estatus: activo.estatus,
                         razon: activo.razon,
                         tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                        codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+                        modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
                         user: activo.userId
                     };
                     activosArray.push(formattedActivo);
@@ -201,9 +203,9 @@ exports.getActivosByEstatus = (req, res, next) => {
 exports.getActivosByProyecto = (req, res, next) => {
     var activosArray = [];
     const proyecto = req.query.id;
-    console.log(proyecto);
+
     Activo.findAll({
-        where: { proyectoId: proyecto }, // Agrega la cláusula where aquí
+        where: { proyectoId: proyecto },
         include: [{
             model: TipoActivo
         }]
@@ -222,6 +224,8 @@ exports.getActivosByProyecto = (req, res, next) => {
                         estatus: activo.estatus,
                         razon: activo.razon,
                         tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                        codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+                        modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
                         proyecto: activo.proyectoId,
                         user: activo.userId
                     };
@@ -236,8 +240,12 @@ exports.getActivosByProyecto = (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor.'
+            });
         });
 };
+
 
 exports.getActivo = (req, res, next) => {
     const id = req.query.id;
@@ -273,6 +281,34 @@ exports.getActivo = (req, res, next) => {
             console.log(err);
         });
 };
+
+exports.changeEstatusByNumeroSerie = (req, res, next) => {
+    const numeroSerie = req.body.content.numeroSerie;
+    console.log(numeroSerie)
+    const nuevoEstatus = 'Productivo'; 
+
+    Activo.update({ estatus: nuevoEstatus }, { where: { numeroSerie: numeroSerie } })
+        .then(result => {
+            const rowsUpdated = result[0]; // Accede a las filas actualizadas desde el resultado
+            if (rowsUpdated > 0) {
+                res.status(200).json({
+                    message: `Estatus del activo con número de serie ${numeroSerie} actualizado con éxito.`,
+                });
+            } else {
+                res.status(404).json({
+                    message: `No se encontró ningún activo con el número de serie ${numeroSerie}.`
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor.'
+            });
+        });
+};
+
+
 
 
 // exports.getActivo = (req, res, next) => {

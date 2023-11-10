@@ -13,6 +13,8 @@ router.get('/get-all-estatus', activosController.getActivosByEstatus);
 
 router.get('/get-all-proyecto', activosController.getActivosByProyecto);
 
+router.post('/edit-numero-serie-recibido', activosController.changeEstatusByNumeroSerie);
+
 router.post('/get-activo', activosController.getActivo);
 
 // router.post('/create-tipo', activosController.saveAllTipoActivos);

@@ -15,7 +15,7 @@ const Activo = sequelize.define('activo', {
     //     allowNull: false
     // },
     numeroSerie:{
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
     },
     numeroActivo:{
