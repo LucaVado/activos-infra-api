@@ -289,6 +289,33 @@ exports.postDeleteUser = (req,res,next) => {
         });
 }
 
+exports.getUserLogin = async (req, res) => {
+    const { correo, password } = req.body;
+  
+    try {
+      // Buscar al usuario por correo
+      const user = await User.findOne({ where: { correo: correo }, include: [Sucursal, Departamento] });
+  
+      // Verificar si el usuario existe
+      if (!user) {
+        return res.status(401).json({ message: 'Credenciales inválidas' });
+      }
+  
+      // Verificar la contraseña sin cifrar
+      if (password !== user.password) {
+        return res.status(401).json({ message: 'Credenciales inválidas' });
+      }
+  
+      // Las credenciales son válidas
+      res.json({ user: user });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Hubo un problema al procesar la solicitud' });
+    }
+  };
+  
+
 // {
 //     "content": {
 //         "nombre": "Jose Carlos", 
