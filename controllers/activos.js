@@ -1,3 +1,5 @@
+const ExcelJS = require('exceljs');
+
 const Activo = require('../models/activo');
 const TipoActivo = require('../models/tipo-activo');
 const Proyecto = require('../models/proyecto');
@@ -202,10 +204,10 @@ exports.getActivosByEstatus = (req, res, next) => {
 
 exports.getActivosByProyecto = (req, res, next) => {
     var activosArray = [];
-    const proyecto = req.query.id;
+    const proyectoId = req.query.id;
 
     Activo.findAll({
-        where: { proyectoId: proyecto },
+        where: { proyectoId: proyectoId },
         include: [{
             model: TipoActivo
         }]
@@ -215,26 +217,36 @@ exports.getActivosByProyecto = (req, res, next) => {
                 return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
             });
             return Promise.all(promises).then(tiposActivos => {
-                activos.forEach((activo, index) => {
-                    const formattedActivo = {
-                        id: activo.id,
-                        nombre: activo.nombre,
-                        fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
-                        fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
-                        estatus: activo.estatus,
-                        razon: activo.razon,
-                        tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
-                        codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
-                        modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
-                        proyecto: activo.proyectoId,
-                        user: activo.userId
-                    };
-                    activosArray.push(formattedActivo);
-                });
-                console.log('activosArray: ', activosArray);
-                res.status(200).json({
-                    message: "activos obtenidos",
-                    activos: activosArray
+                const proyectoPromise = Proyecto.findOne({ where: { id: proyectoId } });
+
+                return Promise.all([proyectoPromise, tiposActivos]).then(result => {
+                    const proyecto = result[0];
+                    const tiposActivos = result[1];
+
+                    activos.forEach((activo, index) => {
+                        const formattedActivo = {
+                            id: activo.id,
+                            nombre: activo.nombre,
+                            fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                            fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+                            estatus: activo.estatus,
+                            razon: activo.razon,
+                            numeroSerie: activo.numeroSerie,
+                            tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                            codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+                            modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
+                            proyecto: proyecto.nombre,
+                            proyectoId: proyecto.id,
+                            user: activo.userId
+                        };
+                        activosArray.push(formattedActivo);
+                    });
+
+                    console.log('activosArray: ', activosArray);
+                    res.status(200).json({
+                        message: "activos obtenidos",
+                        activos: activosArray
+                    });
                 });
             });
         })
@@ -245,6 +257,52 @@ exports.getActivosByProyecto = (req, res, next) => {
             });
         });
 };
+// exports.getActivosByProyecto = (req, res, next) => {
+//     var activosArray = [];
+//     const proyecto = req.query.id;
+
+//     Activo.findAll({
+//         where: { proyectoId: proyecto },
+//         include: [{
+//             model: TipoActivo
+//         }]
+//     })
+//         .then(activos => {
+//             const promises = activos.map(activo => {
+//                 return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+//             });
+//             return Promise.all(promises).then(tiposActivos => {
+//                 activos.forEach((activo, index) => {
+//                     const formattedActivo = {
+//                         id: activo.id,
+//                         nombre: activo.nombre,
+//                         fechaEntrada: new Date(activo.fechaEntrada).toISOString().split('T')[0],
+//                         fechaSalida: new Date(activo.fechaSalida).toISOString().split('T')[0],
+//                         estatus: activo.estatus,
+//                         razon: activo.razon,
+//                         numeroSerie: activo.numeroSerie,
+//                         tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+//                         codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+//                         modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
+//                         proyecto: activo.proyectoId,
+//                         user: activo.userId
+//                     };
+//                     activosArray.push(formattedActivo);
+//                 });
+//                 console.log('activosArray: ', activosArray);
+//                 res.status(200).json({
+//                     message: "activos obtenidos",
+//                     activos: activosArray
+//                 });
+//             });
+//         })
+//         .catch(err => {
+//             console.log(err);
+//             res.status(500).json({
+//                 error: 'Error interno del servidor.'
+//             });
+//         });
+// };
 
 
 exports.getActivo = (req, res, next) => {
@@ -396,3 +454,193 @@ exports.postDeleteActivo = (req, res, next) => {
             console.log(err);
         });
 }
+
+const setTableBorders = (worksheet, headers, lastRowNumber) => {
+    const lastColumnIndex = headers.length;
+
+    // Verificar que el índice de la última columna esté en el rango válido
+    if (lastColumnIndex >= 1 && lastColumnIndex <= 16384) {
+        // Obtener la letra de la última columna
+        const lastColumnLetter = worksheet.getColumn(lastColumnIndex).letter;
+
+        // Establecer bordes alrededor de toda la tabla
+        const borderStyle = { style: 'thin', color: { argb: '000000' } }; // Puedes ajustar el color y estilo según tus preferencias
+
+        worksheet.getCell(`A1:${lastColumnLetter}${lastRowNumber}`).border = {
+            top: borderStyle,
+            left: borderStyle,
+            bottom: borderStyle,
+            right: borderStyle
+        };
+    } else {
+        console.error('Índice de columna fuera de rango válido.');
+    }
+};
+
+exports.generarReporteActivosProyectoExcel = (req, res, next) => {
+    const proyectoId = req.query.id;
+
+    Activo.findAll({
+        where: { proyectoId: proyectoId },
+        include: [{
+            model: TipoActivo
+        }]
+    })
+        .then(activos => {
+            const promises = activos.map(activo => {
+                return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+            });
+            return Promise.all(promises).then(tiposActivos => {
+                const proyectoPromise = Proyecto.findOne({ where: { id: proyectoId } });
+
+                return Promise.all([proyectoPromise, tiposActivos]).then(result => {
+                    const proyecto = result[0];
+                    const tiposActivos = result[1];
+
+                    const activosArray = activos.map((activo, index) => {
+                        return {
+                            ID: activo.id,
+                            Nombre: activo.nombre,
+                            'Fecha de Entrada': new Date(activo.fechaEntrada).toISOString().split('T')[0],
+                            'Fecha de Salida': new Date(activo.fechaSalida).toISOString().split('T')[0],
+                            Estatus: activo.estatus,
+                            Razon: activo.razon,
+                            Serie: activo.numeroSerie,
+                            Tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+                            Codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+                            Modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
+                            Proyecto: proyecto.nombre,
+                        };
+                    });
+
+                    const workbook = new ExcelJS.Workbook();
+                    const worksheet = workbook.addWorksheet('Activos');
+
+                    // Estilo para encabezados del título de la tabla
+                    const titleHeaderStyle = {
+                        font: { color: { argb: 'FFFFFF' }, bold: true, size: 16 },
+                        fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '002A52' } },
+                        alignment: { vertical: 'middle', horizontal: 'center' }
+                    };
+
+                    // Combinar celdas para el título de la tabla
+                    const headers = Object.keys(activosArray[0]);
+                    worksheet.mergeCells(`A1:${String.fromCharCode(65 + headers.length - 1)}1`);
+                    worksheet.getCell('A1').value = `Activos de proyecto ${proyecto.nombre}`;
+                    worksheet.getCell('A1').style = titleHeaderStyle;
+
+                    // Encabezados
+                    const columnHeaderStyle = {
+                        font: { color: { argb: 'FFFFFF' }, bold: true },
+                        fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '3D9CFF' } },
+                        alignment: { vertical: 'middle', horizontal: 'center' }
+                    };
+
+                    const headerRow = worksheet.addRow(headers);
+                    headerRow.eachCell(cell => {
+                        cell.style = columnHeaderStyle;
+                    });
+
+                    // Datos
+                    activosArray.forEach(activo => {
+                        const row = worksheet.addRow(Object.values(activo));
+                        row.eachCell(cell => {
+                            // Centrar el contenido de la celda
+                            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+                            // Ajustar el ancho de la celda al contenido
+                            const columnWidth = Math.max(10, cell.value ? cell.value.toString().length + 2 : 10);
+                            worksheet.getColumn(cell.col).width = columnWidth;
+                        });
+                    });
+
+                    // // Añadir bordes alrededor de toda la tabla
+                    // setTableBorders(worksheet, headers, worksheet.lastRow.number);
+
+                    // Enviar el archivo Excel como respuesta
+                    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    res.setHeader('Content-Disposition', `attachment; filename=reporte_activos_proyecto_${proyecto.nombre}.xlsx`);
+
+                    return workbook.xlsx.write(res)
+                        .then(() => {
+                            res.status(200).end();
+                        });
+                });
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: 'Error interno del servidor.'
+            });
+        });
+};
+
+// exports.generarReporteActivosProyectoExcel = (req, res, next) => {
+//     const proyectoId = req.query.id;
+
+//     Activo.findAll({
+//         where: { proyectoId: proyectoId },
+//         include: [{
+//             model: TipoActivo
+//         }]
+//     })
+//         .then(activos => {
+//             const promises = activos.map(activo => {
+//                 return TipoActivo.findOne({ where: { id: activo.tipoActivoId } });
+//             });
+//             return Promise.all(promises).then(tiposActivos => {
+//                 const proyectoPromise = Proyecto.findOne({ where: { id: proyectoId } });
+
+//                 return Promise.all([proyectoPromise, tiposActivos]).then(result => {
+//                     const proyecto = result[0];
+//                     const tiposActivos = result[1];
+
+//                     const activosArray = activos.map((activo, index) => {
+//                         return {
+//                             ID: activo.id,
+//                             Nombre: activo.nombre,
+//                             'Fecha de Entrada': new Date(activo.fechaEntrada).toISOString().split('T')[0],
+//                             'Fecha de Salida': new Date(activo.fechaSalida).toISOString().split('T')[0],
+//                             Estatus: activo.estatus,
+//                             Razon: activo.razon,
+//                             Serie: activo.numeroSerie,
+//                             Tipo: tiposActivos[index] ? tiposActivos[index].tipo : "activo no encontrado",
+//                             Codigo: tiposActivos[index] ? tiposActivos[index].codigo : "codigo no encontrado",
+//                             Modelo: tiposActivos[index] ? tiposActivos[index].modelo : "modelo no encontrado",
+//                             Proyecto: proyecto.nombre,
+//                             ProyectoId: proyecto.id,
+//                             User: activo.userId
+//                         };
+//                     });
+
+//                     const workbook = new ExcelJS.Workbook();
+//                     const worksheet = workbook.addWorksheet('Activos');
+
+//                     // Encabezados
+//                     const headers = Object.keys(activosArray[0]);
+//                     worksheet.addRow(headers);
+
+//                     // Datos
+//                     activosArray.forEach(activo => {
+//                         worksheet.addRow(Object.values(activo));
+//                     });
+
+//                     // Enviar el archivo Excel como respuesta
+//                     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+//                     res.setHeader('Content-Disposition', `attachment; filename=reporte_activos_proyecto_${proyecto.nombre}.xlsx`);
+
+//                     return workbook.xlsx.write(res)
+//                         .then(() => {
+//                             res.status(200).end();
+//                         });
+//                 });
+//             });
+//         })
+//         .catch(err => {
+//             console.log(err);
+//             res.status(500).json({
+//                 error: 'Error interno del servidor.'
+//             });
+//         });
+// };
