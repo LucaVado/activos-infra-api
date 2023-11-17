@@ -25,4 +25,6 @@ router.post('/post-edit-activo', activosController.postEditActivo);
 
 router.post('/delete-activo', activosController.postDeleteActivo);
 
+router.get('/generar-reporte-activos-excel', activosController.generarReporteActivosProyectoExcel);
+
 module.exports = router;
