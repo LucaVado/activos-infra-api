@@ -6,6 +6,9 @@ const app = express();
 
 const bodyParser = require('body-parser');
 
+const session = require('express-session');
+var SequelizeSession = require('connect-session-sequelize')(session.Store);
+
 // app.use(bodyParser.urlencoded()); 
 app.use(bodyParser.json()); // application/json
 
@@ -17,7 +20,7 @@ const Proyecto = require('./models/proyecto');
 const Sucursal = require('./models/sucursal');
 const Departamento = require('./models/departamento');
 const User = require('./models/user');
-
+const Session = require('./models/session');
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,6 +30,12 @@ app.use((req, res, next) => {
     next();
 });
 
+const store = new SequelizeSession({
+    db: sequelize,
+    table: 'session',
+    checkExpirationInterval: 15 * 60 * 1000,
+    expiration: 4 * 60 * 60 * 1000
+});
 
 const activosRoutes = require('./routes/activos');
 const tipoActivoRoutes = require('./routes/tipo-activo');
@@ -34,6 +43,25 @@ const usersRoutes = require('./routes/user');
 const departamentosRoutes = require('./routes/departamentos');
 const sucursalRoutes = require('./routes/sucursal');
 const proyectosRoutes = require('./routes/proyectos');
+
+app.use(session({
+    secret: 'my secret', 
+    store: store,
+    resave: false, 
+    saveUninitialized: false
+}));
+
+app.use((req, res, next) => {
+    if (!req.session.user) {
+      return next();
+    }
+    User.findByPk(req.session.user.id)
+        .then(user => {
+        req.user = user;
+        next();
+        })
+        .catch(err => console.log(err));
+});
 
 app.use('/activos', activosRoutes);
 app.use('/tipo-activo', tipoActivoRoutes);
@@ -59,6 +87,7 @@ Proyecto.hasMany(Activo);
 Proyecto.belongsTo(Sucursal);
 User.hasMany(Proyecto);
 TipoActivo.belongsTo(User);
+Session.belongsTo(User);
 
 
 sequelize

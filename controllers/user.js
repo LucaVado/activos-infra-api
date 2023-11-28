@@ -2,6 +2,7 @@ const User = require('../models/user');
 const Sucursal = require('../models/sucursal'); 
 const Departamento = require('../models/departamento'); 
 const { use } = require('../routes/activos');
+const jwt = require('jsonwebtoken');
 
 
 exports.getUsers = (req, res, next) => {
@@ -315,6 +316,77 @@ exports.getUserLogin = async (req, res) => {
     }
   };
   
+  exports.getLogin = (req, res, next) => {
+    if(req.session.isLoggedIn){
+      return res.redirect('/');
+    }else{
+      let errorMessage = req.flash('error');
+      let message = req.flash('message');
+      if(message.length > 0){
+        message = message[0];
+        errorMessage = null;
+      } else{
+        errorMessage= errorMessage[0];
+        message = null;
+      }
+      res.render('auth/login', {
+          path: '/login',
+          pageTitle: 'Login',
+          isAuthenticated: false,
+          errorMessage: errorMessage,
+          message: message,
+          isADmin: req.session.isAdmin
+        });
+    }
+  }
+  
+  exports.postLogin = (req, res, next) => {
+    const correo = req.body.correo;
+    const password = req.body.password;
+  
+    User.findOne({ where: { correo: correo } })
+      .then(user => {
+        if (!user) {
+          req.flash('error', 'Invalid credentials.');
+          return res.status(401).json({ message: 'Invalid credentials' });
+        }
+  
+        // bcrypt.compare(password, user.password)
+        //   .then(match => {
+            if (password == user.password) {
+              // Generar un token JWT después de la autenticación exitosa
+              const token = jwt.sign({ userId: user.id }, 'secreto_del_servidor', { expiresIn: '1h' });
+  
+              // Establecer la sesión del usuario
+              req.session.isLoggedIn = true;
+              req.session.isAdmin = user.tipoUsuario === 'Administrador' ? true : false;
+              req.session.user = user;
+
+              console.log(req.session.user);
+  
+              // Enviar la respuesta con la información necesaria
+              return res.status(200).json({
+                message: 'Authentication successful',
+                token: token,
+                isAdmin: req.session.isAdmin,
+                userData: req.session.user,
+                isLoggedIn: req.session.isLoggedIn
+              });
+            }
+  
+            req.flash('error', 'Invalid credentials.');
+            return res.status(401).json({ message: 'Invalid credentials' });
+          })
+          .catch(err => {
+            console.log(err);
+            return res.status(500).json({ message: 'Internal server error' });
+          });
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //     return res.status(500).json({ message: 'Internal server error' });
+    //   });
+  };
 
 // {
 //     "content": {
