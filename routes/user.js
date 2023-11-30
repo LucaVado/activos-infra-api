@@ -16,6 +16,8 @@ router.post('/delete-user', usersController.postDeleteUser);
 
 router.post('/login', usersController.getUserLogin);
 
+router.post('/get-token', usersController.getToken);
+
 router.post('/post-login', usersController.postLogin);
 
 

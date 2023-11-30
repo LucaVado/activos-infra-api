@@ -316,28 +316,22 @@ exports.getUserLogin = async (req, res) => {
     }
   };
   
-  exports.getLogin = (req, res, next) => {
-    if(req.session.isLoggedIn){
-      return res.redirect('/');
-    }else{
-      let errorMessage = req.flash('error');
-      let message = req.flash('message');
-      if(message.length > 0){
-        message = message[0];
-        errorMessage = null;
-      } else{
-        errorMessage= errorMessage[0];
-        message = null;
-      }
-      res.render('auth/login', {
-          path: '/login',
-          pageTitle: 'Login',
-          isAuthenticated: false,
-          errorMessage: errorMessage,
-          message: message,
-          isADmin: req.session.isAdmin
-        });
+  exports.getToken = (req, res, next) => {
+    const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: 'Token no proporcionado' });
+  }
+
+  // Verificar y decodificar el token
+  jwt.verify(token, 'secreto_del_servidor', (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Token no válido' });
     }
+
+    // El token es válido, decoded contiene la información decodificada del token
+    res.json({ decoded });
+  });
   }
   
   exports.postLogin = (req, res, next) => {
@@ -354,9 +348,11 @@ exports.getUserLogin = async (req, res) => {
         // bcrypt.compare(password, user.password)
         //   .then(match => {
             if (password == user.password) {
+                // const tokenData = { user: user, isAdmin: req.session.isAdmin};
+                // console.log('tokenData:', tokenData);
               // Generar un token JWT después de la autenticación exitosa
-              const token = jwt.sign({ userId: user.id }, 'secreto_del_servidor', { expiresIn: '1h' });
-  
+              const token = jwt.sign({ user: user  }, 'secreto_del_servidor', { expiresIn: '1h' });
+                console.log(token);
               // Establecer la sesión del usuario
               req.session.isLoggedIn = true;
               req.session.isAdmin = user.tipoUsuario === 'Administrador' ? true : false;
