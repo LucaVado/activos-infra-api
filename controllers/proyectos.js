@@ -9,6 +9,7 @@ exports.getProyectos = (req, res, next) => {
         }
     })
         .then(proyectos => {
+            console.log(proyectos);
             const formattedProyectos = proyectos.map(proyecto => {
                 return {
                     id: proyecto.id,
