@@ -2,6 +2,7 @@ const User = require('../models/user');
 const Sucursal = require('../models/sucursal'); 
 const Departamento = require('../models/departamento'); 
 const { use } = require('../routes/activos');
+const jwt = require('jsonwebtoken');
 
 
 exports.getUsers = (req, res, next) => {
@@ -315,6 +316,73 @@ exports.getUserLogin = async (req, res) => {
     }
   };
   
+  exports.getToken = (req, res, next) => {
+    const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: 'Token no proporcionado' });
+  }
+
+  // Verificar y decodificar el token
+  jwt.verify(token, 'secreto_del_servidor', (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: 'Token no válido' });
+    }
+
+    // El token es válido, decoded contiene la información decodificada del token
+    res.json({ decoded });
+  });
+  }
+  
+  exports.postLogin = (req, res, next) => {
+    const correo = req.body.correo;
+    const password = req.body.password;
+  
+    User.findOne({ where: { correo: correo } })
+      .then(user => {
+        if (!user) {
+          req.flash('error', 'Invalid credentials.');
+          return res.status(401).json({ message: 'Invalid credentials' });
+        }
+  
+        // bcrypt.compare(password, user.password)
+        //   .then(match => {
+            if (password == user.password) {
+                // const tokenData = { user: user, isAdmin: req.session.isAdmin};
+                // console.log('tokenData:', tokenData);
+              // Generar un token JWT después de la autenticación exitosa
+              const token = jwt.sign({ user: user  }, 'secreto_del_servidor', { expiresIn: '1h' });
+                console.log(token);
+              // Establecer la sesión del usuario
+              req.session.isLoggedIn = true;
+              req.session.isAdmin = user.tipoUsuario === 'Administrador' ? true : false;
+              req.session.user = user;
+
+              console.log(req.session.user);
+  
+              // Enviar la respuesta con la información necesaria
+              return res.status(200).json({
+                message: 'Authentication successful',
+                token: token,
+                isAdmin: req.session.isAdmin,
+                userData: req.session.user,
+                isLoggedIn: req.session.isLoggedIn
+              });
+            }
+  
+            req.flash('error', 'Invalid credentials.');
+            return res.status(401).json({ message: 'Invalid credentials' });
+          })
+          .catch(err => {
+            console.log(err);
+            return res.status(500).json({ message: 'Internal server error' });
+          });
+    //   })
+    //   .catch(err => {
+    //     console.log(err);
+    //     return res.status(500).json({ message: 'Internal server error' });
+    //   });
+  };
 
 // {
 //     "content": {
