@@ -10,6 +10,8 @@ router.post('/post-proyecto', proyectosController.createProyecto);
 
 router.post('/get-proyecto', proyectosController.getProyecto);
 
+router.get('/get-all-estatus', proyectosController.getProyectoByEstatus);
+
 router.get('/get-proyectoByName', proyectosController.getProyectoByName);
 
 router.post('/post-edit-proyecto', proyectosController.postEditProyecto);

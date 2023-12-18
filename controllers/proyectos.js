@@ -211,6 +211,26 @@ exports.getProyectoByName = (req, res, next) => {
         });
 }
 
+exports.getProyectoByEstatus = (req, res, next) => {
+    var proyectosArray = [];
+    const estatus = req.query.estatus;
+    console.log(estatus);
+    Proyecto.findAll({
+        where: { estatus: estatus }, // Agrega la cláusula where aquí
+    })
+        .then(proyectos => {
+            
+                res.json({
+                    message: "activos obtenidos",
+                    proyectos: proyectos
+                });
+            
+        })
+        .catch(err => {
+            console.log(err);
+        });
+};
+
 exports.postEditProyecto = (req, res, next) => {
     const proyectoId = req.body.proyecto.id;
     const updatedNombre = req.body.proyecto.nombre;
