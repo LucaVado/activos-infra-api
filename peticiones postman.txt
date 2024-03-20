@@ -19,15 +19,17 @@ localhost:8080/departamento/post-departamento
 localhost:8080/users/post-users
 {
      "content": {
-         "nombre": "Jose Carlos", 
-         "apellidoPaterno":"Jimenez",
-         "apellidoMaterno": "Bacasegua",
+         "nombre": "Luis Carlos",
+         "apellidoPaterno":"Valdez",
+         "apellidoMaterno": "Dominguez",
          "numeroEmpleado": 123,
          "correo": "practicanteinfra2@paquetexpress.com.mx",
          "password":"1234",
-         "tipoUsuario": "Admin",
+         "tipoUsuario": "Administrador",
          "sucursalId": 1,
-         "departamentoId": 1
+         "departamentoId": 1,
+         "sucursal" : "LMM-01",
+         "departamento" : "Infraestructura"
      }
 }
 
