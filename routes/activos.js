@@ -5,6 +5,8 @@ const router = express.Router();
 
 const activosController = require('../controllers/activos');
 
+router.get("/buscar/:busqueda", activosController.buscarActivos);
+
 router.get('/get-all', activosController.getActivos);
 
 router.get('/get-all-tipo', activosController.getActivosByTipo);
