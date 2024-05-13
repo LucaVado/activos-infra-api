@@ -1,5 +1,6 @@
 const ExcelJS = require('exceljs');
-
+const Sequelize = require('sequelize');
+const { Op } = require('sequelize');
 const Activo = require('../models/activo');
 const TipoActivo = require('../models/tipo-activo');
 const Proyecto = require('../models/proyecto');
@@ -16,6 +17,45 @@ const Proyecto = require('../models/proyecto');
 //         Sucursal: 'MTRIZ',
 //     }
 // ]
+
+exports.buscarActivos = (req, res) => {
+    // Sacar el string de búsqueda
+    let busqueda = req.params.busqueda;
+
+    // Convertir la búsqueda a minúsculas
+    busqueda = busqueda.toLowerCase();
+
+    // Realizar la búsqueda insensible a mayúsculas y minúsculas
+    Activo.findAll({
+        where: {
+            [Op.or]: [
+                { nombre: { [Op.like]: `%${busqueda}%` }},
+                { numeroSerie: { [Op.like]: `%${busqueda}%` }}
+            ]
+        },
+        order: [['fechaEntrada', 'DESC']]
+    })
+        .then(activosEncontrados => {
+            if (!activosEncontrados || activosEncontrados.length <= 0) {
+                return res.status(404).json({
+                    status: "error",
+                    mensaje: "No se han encontrado activos"
+                });
+            }
+
+            return res.status(200).json({
+                status: "success",
+                activos: activosEncontrados
+            });
+        })
+        .catch(error => {
+            console.error("Error al buscar activos:", error);
+            return res.status(500).json({
+                status: "error",
+                mensaje: "Error interno del servidor"
+            });
+        });
+}
 
 exports.getActivos = (req, res, next) => {
     Activo.findAll()
